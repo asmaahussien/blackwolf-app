@@ -19,14 +19,28 @@
     
     <button class="btn" onclick="loginWithPi()">تسجيل الدخول عبر Pi</button>
 
-    <script>
-        // تهيئة الـ SDK في بيئة التجربة (Sandbox)
+        <script>
         Pi.init({ version: "2.0", sandbox: true });
-        console.log("تم تحميل Pi SDK بنجاح");
+        console.log("تم تحميل Pi SDK بنجاح والتجهيز للمصادقة الفعلية");
 
         function loginWithPi() {
-            alert("سيتم ربط حسابك بـ Pi بمجرد تفعيل الاستضافة السحابية!");
+            const scopes = ['username', 'payments'];
+            
+            Pi.authenticate(scopes, onIncompletePaymentFound)
+            .then(function(auth) {
+                alert("أهلاً بك يا " + auth.user.username + "! تم التحقق من حسابك بنجاح.");
+                console.log("بيانات المستخدم المستلمة:", auth);
+            })
+            .catch(function(error) {
+                console.error("فشل تسجيل الدخول:", error);
+                alert("فشلت المصادقة الأمنية، تأكد من فتح التطبيق داخل Pi Browser.");
+            });
         }
-    </script>
+
+        function onIncompletePaymentFound(payment) {
+            console.log("تم العثور على دفعة غير مكتملة:", payment);
+        }
+        </script>
+    
 </body>
 </html>
